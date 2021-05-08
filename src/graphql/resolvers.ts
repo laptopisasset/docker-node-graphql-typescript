@@ -1,10 +1,6 @@
-const hello = () => {
-  return {
-    text: "Hello World!",
-    views: 12345,
-  };
-};
+const User = require("../model/");
 
+const createUser = ({ userInput }: any, req: any) => {};
 export default {
-  hello,
+  createUser,
 };
