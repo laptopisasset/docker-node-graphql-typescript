@@ -1,0 +1,27 @@
+version: "3"
+services:
+  mongo:
+    image: "mongo"
+
+  mongo-express:
+    depends_on:
+      - mongo
+    image: "mongo-express"
+    ports:
+      - "8081:8081"
+
+  server:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile.dev
+      context: .
+    environment:
+      - PORT=8080
+      - MONGO_HOST=mongo
+      - MONGO_PORT=27017
+      - MONGO_DATABASE=todo-tdd
+    volumes:
+      - /app/node_modules
+      - .:/app
+    ports:
+      - "8080:8080"
