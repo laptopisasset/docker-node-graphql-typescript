@@ -19,7 +19,7 @@ services:
       - PORT=8080
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
-      - MONGO_DATABASE=todo-tdd
+      - MONGO_DATABASE=tdd-posts
     volumes:
       - /app/node_modules
       - .:/app
