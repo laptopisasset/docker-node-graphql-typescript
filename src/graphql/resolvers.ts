@@ -69,6 +69,11 @@ const login = async ({ email, password }: any, req: any) => {
 };
 
 const createPost = async ({ postInput }: any, req: any) => {
+  if (!req.isAuth) {
+    const error: any = new Error("Not authenticated");
+    error.code = 401;
+    throw error;
+  }
   const errors = [];
   if (
     validator.isEmpty(postInput.title) ||
@@ -88,12 +93,22 @@ const createPost = async ({ postInput }: any, req: any) => {
     error.code = 400;
     throw error;
   }
-
+  const user = await User.findById(req.userId);
+  if (!user) {
+    const error: any = new Error("Invalid user");
+    error.code = 401;
+    throw error;
+  }
   const createdPost = await Post.create({
     title: postInput.title,
     content: postInput.content,
     imageUrl: postInput.imageUrl,
+    creator: user,
   });
+
+  user.posts.push(createdPost);
+
+  await user.save();
 
   return {
     ...createdPost._doc,

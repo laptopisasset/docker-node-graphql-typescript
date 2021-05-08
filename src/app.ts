@@ -3,6 +3,7 @@ import { graphqlHTTP } from "express-graphql";
 
 import graphqlSchema from "./graphql/schema";
 import graphqlResolver from "./graphql/resolvers";
+import auth from "./middlewares/auth";
 
 const app = express();
 
@@ -19,12 +20,16 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(auth);
+
 app.use(
   "/graphql",
   graphqlHTTP({
     schema: graphqlSchema,
     rootValue: graphqlResolver,
-    graphiql: true,
+    graphiql: {
+      headerEditorEnabled: true,
+    },
     customFormatErrorFn: (err) => {
       if (!err.originalError) {
         return err;
