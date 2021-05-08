@@ -118,14 +118,24 @@ const createPost = async ({ postInput }: any, req: any) => {
   };
 };
 
-const posts = async (args: any, req: any) => {
+const posts = async ({ page }: any, req: any) => {
   if (!req.isAuth) {
     const error: any = new Error("Not authenticated");
     error.code = 401;
     throw error;
   }
+  if (!page) {
+    page = 1;
+  }
+
+  const perPage = 2;
+
   const totalPosts = await Post.countDocuments({});
-  const posts = await Post.find({}).sort({ createdAt: -1 }).populate("creator");
+  const posts = await Post.find({})
+    .sort({ createdAt: -1 })
+    .skip((page - 1) * perPage)
+    .limit(perPage)
+    .populate("creator");
 
   return {
     posts: posts.map((post: any) => ({
