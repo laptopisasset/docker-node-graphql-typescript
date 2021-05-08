@@ -1,4 +1,6 @@
 import User from "../models/user";
+import Post from "../models/post";
+
 import bcrypt from "bcryptjs";
 import validator from "validator";
 import jwt from "jsonwebtoken";
@@ -66,7 +68,43 @@ const login = async ({ email, password }: any, req: any) => {
   };
 };
 
+const createPost = async ({ postInput }: any, req: any) => {
+  const errors = [];
+  if (
+    validator.isEmpty(postInput.title) ||
+    !validator.isLength(postInput.title, { min: 5 })
+  ) {
+    errors.push({ message: "Title is invalid" });
+  }
+  if (
+    validator.isEmpty(postInput.content) ||
+    !validator.isLength(postInput.content, { min: 5 })
+  ) {
+    errors.push({ message: "Content  is invalid" });
+  }
+  if (errors.length > 0) {
+    const error: any = new Error("Invalid Input");
+    error.data = errors;
+    error.code = 400;
+    throw error;
+  }
+
+  const createdPost = await Post.create({
+    title: postInput.title,
+    content: postInput.content,
+    imageUrl: postInput.imageUrl,
+  });
+
+  return {
+    ...createdPost._doc,
+    _id: createdPost._id.toString(),
+    createdAt: createdPost.createdAt.toISOString(),
+    updatedAt: createdPost.updatedAt.toISOString(),
+  };
+};
+
 export default {
   createUser,
   login,
+  createPost,
 };
